@@ -15,7 +15,7 @@ jobs:
       matrix:
         cc: [gcc, clang]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Build (strict warnings, warnings are errors)
         run: make CC=${{ matrix.cc }} all
@@ -47,7 +47,7 @@ jobs:
     name: valgrind
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Install Valgrind
         run: sudo apt-get update && sudo apt-get install -y valgrind
@@ -59,7 +59,7 @@ jobs:
     name: asan + ubsan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Run the suite under ASan and UBSan
         run: make sanitize
