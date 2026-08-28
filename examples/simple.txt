@@ -1,0 +1,16 @@
+# A three-candidate contest that needs a redistribution to resolve.
+# First line: how many candidates. Then one name per line. Then one
+# ballot per line, giving each candidate's rank in registration order.
+3
+Alice
+Bob
+Carol
+1 2 3
+1 2 3
+1 3 2
+1 2 3
+2 1 3
+2 1 3
+3 1 2
+3 2 1
+3 2 1

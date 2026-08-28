@@ -1,0 +1,25 @@
+# Build output
+build/
+*.o
+*.a
+*.exe
+vote
+
+# Test scratch files
+test_input.*
+test_bad.txt
+test_out.*
+results.json
+
+# Editors and tooling
+.vscode/
+.idea/
+*.swp
+compile_commands.json
+.cache/
+
+# Debuggers and profilers
+*.dSYM/
+core
+vgcore.*
+callgrind.out.*

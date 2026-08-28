@@ -1,0 +1,6 @@
+# Keep LF in the repository and in the working tree. A Makefile or a
+# shell snippet checked out with CRLF breaks on Linux and macOS.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary

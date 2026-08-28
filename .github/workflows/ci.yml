@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: ${{ matrix.cc }} on ubuntu-latest
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        cc: [gcc, clang]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build (strict warnings, warnings are errors)
+        run: make CC=${{ matrix.cc }} all
+
+      - name: Unit tests
+        run: make CC=${{ matrix.cc }} test
+
+      - name: Sample elections
+        run: |
+          ./build/vote --color=never examples/election.txt
+          ./build/vote --color=never --system=borda examples/election.csv
+          ./build/vote --color=never --system=plurality examples/election.json
+          ./build/vote --color=never --export=/tmp/results.json examples/election.txt
+          python3 -m json.tool /tmp/results.json > /dev/null
+
+      - name: All three input formats agree
+        run: |
+          set -eu
+          txt=$(./build/vote --quiet --color=never examples/election.txt | tail -1)
+          csv=$(./build/vote --quiet --color=never examples/election.csv | tail -1)
+          jsn=$(./build/vote --quiet --color=never examples/election.json | tail -1)
+          echo "text: $txt"
+          echo "csv : $csv"
+          echo "json: $jsn"
+          test "$txt" = "$csv"
+          test "$txt" = "$jsn"
+
+  memory-safety:
+    name: valgrind
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Valgrind
+        run: sudo apt-get update && sudo apt-get install -y valgrind
+
+      - name: Valgrind (zero leaks, zero invalid accesses)
+        run: make valgrind
+
+  sanitizers:
+    name: asan + ubsan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run the suite under ASan and UBSan
+        run: make sanitize
+
+      - name: Sample elections under the sanitizers
+        run: |
+          make SANITIZE=1 debug
+          ./build/debug/vote --color=never examples/election.txt > /dev/null
+          ./build/debug/vote --color=never --system=borda examples/election.csv > /dev/null
+          ./build/debug/vote --color=never --system=plurality examples/election.json > /dev/null
